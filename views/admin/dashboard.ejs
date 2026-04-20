@@ -1,0 +1,82 @@
+<% pageTitle = 'Dashboard' %>
+<%- include('../partials/header') %>
+
+<main class="max-w-6xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-black">Dashboard</h1>
+      <p class="text-sm mt-1" style="color:var(--muted)">Selamat datang di panel admin</p>
+    </div>
+    <div class="flex gap-3">
+      <a href="/admin/products" class="btn btn-outline text-sm py-2 px-4">Kelola Produk</a>
+      <a href="/admin/orders" class="btn btn-primary text-sm py-2 px-4">Lihat Pesanan</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <div class="card p-5">
+      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Produk Aktif</div>
+      <div class="text-4xl font-black" style="color:var(--accent)"><%= stats.total_products %></div>
+    </div>
+    <div class="card p-5">
+      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Total Stok</div>
+      <div class="text-4xl font-black" style="color:#00ff88"><%= stats.total_stock %></div>
+    </div>
+    <div class="card p-5">
+      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Terbayar</div>
+      <div class="text-4xl font-black" style="color:#00ff88"><%= stats.total_paid %></div>
+    </div>
+    <div class="card p-5">
+      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Pending</div>
+      <div class="text-4xl font-black" style="color:#ffcc44"><%= stats.total_pending %></div>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold">Pesanan Terbaru</h2>
+      <a href="/admin/orders" class="mono text-xs" style="color:var(--accent)">Lihat semua →</a>
+    </div>
+    <div class="card overflow-hidden">
+      <% if (recentOrders.length === 0) { %>
+      <div class="p-8 text-center" style="color:var(--muted)">Belum ada pesanan</div>
+      <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border)">
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order ID</th>
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Pembeli</th>
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Nominal</th>
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
+              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Waktu</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentOrders.forEach(o => { %>
+            <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
+              <td class="p-4 mono text-xs" style="color:var(--muted)">#<%= o.id.substring(0,8).toUpperCase() %></td>
+              <td class="p-4 font-semibold"><%= o.product_name %></td>
+              <td class="p-4" style="color:var(--muted)"><%= o.customer_name %></td>
+              <td class="p-4 mono" style="color:var(--accent)">Rp <%= Number(o.unique_amount).toLocaleString('id-ID') %></td>
+              <td class="p-4">
+                <span class="badge <%=
+                  o.status === 'paid' ? 'badge-green' :
+                  o.status === 'pending' ? 'badge-yellow' : 'badge-gray'
+                %>"><%= o.status.toUpperCase() %></span>
+              </td>
+              <td class="p-4 mono text-xs" style="color:var(--muted)"><%= o.created_at %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

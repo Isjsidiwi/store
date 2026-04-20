@@ -1,0 +1,107 @@
+<% pageTitle = 'Kelola Produk' %>
+<%- include('../partials/header') %>
+
+<main class="max-w-6xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-black">Produk</h1>
+      <p class="text-sm mt-1" style="color:var(--muted)">Tambah & kelola produk digital</p>
+    </div>
+    <a href="/admin" class="btn btn-outline text-sm py-2 px-4">← Dashboard</a>
+  </div>
+
+  <% if (success) { %>
+  <div class="p-3 rounded-xl mb-5 text-sm" style="background:#00ff8815;border:1px solid #00ff8833;color:#00ff88">✅ <%= success %></div>
+  <% } %>
+
+  <!-- Add Product Form -->
+  <div class="card p-6 mb-8">
+    <h2 class="text-lg font-bold mb-5">Tambah Produk Baru</h2>
+    <form method="POST" action="/admin/products/add" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold mb-2">Nama Produk <span style="color:#ff6666">*</span></label>
+        <input type="text" name="name" class="field" placeholder="Contoh: VPN Premium 1 Bulan" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Harga (Rp) <span style="color:#ff6666">*</span></label>
+        <input type="number" name="price" class="field" placeholder="50000" min="100" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">URL Logo</label>
+        <input type="url" name="logo_url" class="field" placeholder="https://example.com/logo.png">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Kategori</label>
+        <input type="text" name="category" class="field" placeholder="vpn / software / lisensi / dll">
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-semibold mb-2">Deskripsi</label>
+        <textarea name="description" class="field" rows="3" placeholder="Deskripsi produk..."></textarea>
+      </div>
+      <div class="md:col-span-2">
+        <button type="submit" class="btn btn-primary px-8">+ Tambah Produk</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Products Table -->
+  <div class="card overflow-hidden">
+    <% if (products.length === 0) { %>
+    <div class="p-12 text-center" style="color:var(--muted)">
+      <div class="text-4xl mb-3">📦</div>
+      <p>Belum ada produk. Tambah produk pertama kamu!</p>
+    </div>
+    <% } else { %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Harga</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Stok</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(p => { %>
+          <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
+            <td class="p-4">
+              <div class="flex items-center gap-3">
+                <% if (p.logo_url) { %>
+                  <img src="<%= p.logo_url %>" class="w-9 h-9 rounded-lg object-cover">
+                <% } else { %>
+                  <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base" style="background:var(--surface2)">📦</div>
+                <% } %>
+                <div>
+                  <div class="font-semibold"><%= p.name %></div>
+                  <div class="mono text-xs" style="color:var(--muted)"><%= p.category %></div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 mono" style="color:var(--accent)">Rp <%= Number(p.price).toLocaleString('id-ID') %></td>
+            <td class="p-4">
+              <span class="badge <%= p.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= p.stock %> key</span>
+            </td>
+            <td class="p-4">
+              <span class="badge <%= p.is_active ? 'badge-green' : 'badge-gray' %>"><%= p.is_active ? 'AKTIF' : 'NONAKTIF' %></span>
+            </td>
+            <td class="p-4">
+              <div class="flex gap-2 flex-wrap">
+                <a href="/admin/products/<%= p.id %>/keys" class="btn btn-outline text-xs py-1.5 px-3">Keys (<%= p.stock %>)</a>
+                <a href="/admin/products/<%= p.id %>/edit" class="btn btn-outline text-xs py-1.5 px-3">Edit</a>
+                <form method="POST" action="/admin/products/<%= p.id %>/delete" onsubmit="return confirm('Nonaktifkan produk ini?')">
+                  <button type="submit" class="btn text-xs py-1.5 px-3" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433">Hapus</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

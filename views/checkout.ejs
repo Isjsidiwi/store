@@ -1,0 +1,61 @@
+<% pageTitle = 'Checkout — ' + product.name %>
+<%- include('partials/header') %>
+
+<main class="max-w-lg mx-auto px-6 py-12">
+  <a href="/produk/<%= product.slug %>" class="mono text-xs mb-8 inline-flex items-center gap-2 hover:text-[var(--accent)] transition-colors" style="color:var(--muted)">← Kembali</a>
+
+  <h1 class="text-3xl font-black mb-2">Checkout</h1>
+  <p class="text-sm mb-8" style="color:var(--muted)">Lengkapi data pembelian kamu</p>
+
+  <!-- Product Summary -->
+  <div class="card p-4 flex items-center gap-4 mb-6">
+    <% if (product.logo_url) { %>
+      <img src="<%= product.logo_url %>" alt="" class="w-12 h-12 rounded-xl object-cover">
+    <% } else { %>
+      <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style="background:var(--surface2)">📦</div>
+    <% } %>
+    <div class="flex-1">
+      <div class="font-bold"><%= product.name %></div>
+      <div class="mono text-sm" style="color:var(--accent)">Rp <%= Number(product.price).toLocaleString('id-ID') %></div>
+    </div>
+    <span class="badge badge-green">Stok <%= product.stock %></span>
+  </div>
+
+  <% if (error) { %>
+  <div class="p-4 rounded-xl mb-5 text-sm" style="background:#ff444415;border:1px solid #ff444433;color:#ff8888">
+    ⚠️ <%= error %>
+  </div>
+  <% } %>
+
+  <form method="POST" action="/checkout/<%= product.slug %>" class="flex flex-col gap-4">
+    <div>
+      <label class="block text-sm font-semibold mb-2">Nama Lengkap</label>
+      <input type="text" name="customer_name" class="field" placeholder="John Doe" required>
+    </div>
+    <div>
+      <label class="block text-sm font-semibold mb-2">Email</label>
+      <input type="email" name="customer_email" class="field" placeholder="email@kamu.com" required>
+      <p class="text-xs mt-1" style="color:var(--muted)">Key akan bisa dicek via email ini</p>
+    </div>
+
+    <div class="p-4 rounded-xl text-sm" style="background:var(--surface2)">
+      <div class="flex justify-between mb-2">
+        <span style="color:var(--muted)">Harga produk</span>
+        <span class="mono">Rp <%= Number(product.price).toLocaleString('id-ID') %></span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span style="color:var(--muted)">Kode unik</span>
+        <span class="mono" style="color:var(--accent)">+Rp xxx</span>
+      </div>
+      <div class="flex justify-between font-bold pt-2" style="border-top:1px solid var(--border)">
+        <span>Total Bayar</span>
+        <span class="mono" style="color:var(--accent)">Rp <%= Number(product.price).toLocaleString('id-ID') %> + kode unik</span>
+      </div>
+    </div>
+    <p class="text-xs" style="color:var(--muted)">⚡ Kode unik (3 digit) ditambahkan otomatis untuk verifikasi pembayaran. Bayar sesuai nominal yang tertera di halaman QRIS.</p>
+
+    <button type="submit" class="btn btn-primary w-full mt-2">Lanjut ke Pembayaran →</button>
+  </form>
+</main>
+
+<%- include('partials/footer') %>

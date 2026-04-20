@@ -1,0 +1,58 @@
+<% pageTitle = 'Beranda' %>
+<%- include('partials/header') %>
+
+<main class="max-w-6xl mx-auto px-6 py-12">
+  <div class="text-center mb-16">
+    <div class="mono inline-block text-xs border px-3 py-1 rounded-full mb-5" style="color:var(--accent);border-color:var(--accent);opacity:.8"><%= storeTagline %></div>
+    <h1 class="text-5xl md:text-7xl font-black tracking-tight leading-none mb-5">
+      Produk Digital<br><span style="color:var(--accent)">Instant</span>
+    </h1>
+    <p class="text-lg max-w-md mx-auto" style="color:var(--muted)">Bayar QRIS — key langsung dikirim otomatis. Proses 24/7 tanpa menunggu.</p>
+  </div>
+
+  <% if (categories.length > 1) { %>
+  <div class="flex flex-wrap gap-2 mb-8 justify-center">
+    <a href="/" class="badge badge-green" style="cursor:pointer">Semua</a>
+    <% categories.forEach(c => { %>
+      <a href="/?cat=<%= c.category %>" class="badge badge-gray" style="cursor:pointer"><%= c.category %></a>
+    <% }) %>
+  </div>
+  <% } %>
+
+  <% if (products.length === 0) { %>
+  <div class="text-center py-20" style="color:var(--muted)">
+    <div class="text-6xl mb-4">📦</div>
+    <p class="text-xl font-semibold">Belum ada produk</p>
+  </div>
+  <% } else { %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <% products.forEach(p => { %>
+    <a href="/produk/<%= p.slug %>" style="text-decoration:none;color:inherit">
+      <div class="card p-5 flex flex-col gap-4 h-full">
+        <div class="flex items-center gap-3">
+          <% if (p.logo_url) { %>
+            <img src="<%= p.logo_url %>" alt="<%= p.name %>" class="w-12 h-12 rounded-xl object-cover" style="border:1px solid var(--border)">
+          <% } else { %>
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:var(--surface2)">📦</div>
+          <% } %>
+          <div>
+            <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)"><%= p.category %></div>
+            <div class="font-bold"><%= p.name %></div>
+          </div>
+        </div>
+        <p class="text-sm flex-1 leading-relaxed" style="color:var(--muted)"><%= p.description ? p.description.substring(0,100) + (p.description.length > 100 ? '...' : '') : 'Produk digital.' %></p>
+        <div class="flex items-center justify-between mt-auto pt-3" style="border-top:1px solid var(--border)">
+          <div>
+            <div class="mono font-bold text-lg" style="color:var(--accent)">Rp <%= Number(p.price).toLocaleString('id-ID') %></div>
+            <span class="badge <%= p.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= p.stock > 0 ? 'Stok ' + p.stock : 'Habis' %></span>
+          </div>
+          <div class="btn btn-primary text-sm py-2 px-4"><%= p.stock > 0 ? 'Beli Sekarang' : 'Habis' %></div>
+        </div>
+      </div>
+    </a>
+    <% }) %>
+  </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

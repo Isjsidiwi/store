@@ -1,0 +1,167 @@
+<% pageTitle = 'Pesanan #' + order.id.substring(0,8) %>
+<%
+const isPending = order.status === 'pending';
+const isPaid = order.status === 'paid';
+const isExpired = order.status === 'expired';
+const expiredTs = new Date(order.expired_at).getTime();
+%>
+<%- include('partials/header', { extraHead: isPending ? `<style>
+  @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.08);opacity:1} }
+  .pulse { animation: pulse-ring 2s ease-in-out infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+</style>` : '' }) %>
+
+<main class="max-w-lg mx-auto px-6 py-12">
+
+  <!-- Header status -->
+  <div class="text-center mb-8">
+    <% if (isPaid) { %>
+      <div class="text-6xl mb-3">✅</div>
+      <h1 class="text-3xl font-black" style="color:#00ff88">Pembayaran Berhasil!</h1>
+      <p class="mt-2 text-sm" style="color:var(--muted)">Key kamu sudah siap di bawah ini.</p>
+    <% } else if (isExpired) { %>
+      <div class="text-6xl mb-3">⏰</div>
+      <h1 class="text-3xl font-black" style="color:#ff6666">Pesanan Kadaluarsa</h1>
+      <p class="mt-2 text-sm" style="color:var(--muted)">Waktu pembayaran habis. Buat pesanan baru.</p>
+    <% } else { %>
+      <div class="text-6xl mb-3 pulse">⏳</div>
+      <h1 class="text-3xl font-black">Menunggu Pembayaran</h1>
+      <p class="mt-2 text-sm" style="color:var(--muted)">Scan QRIS di bawah, key otomatis dikirim setelah terbayar.</p>
+    <% } %>
+  </div>
+
+  <!-- Order Info Card -->
+  <div class="card p-5 mb-5">
+    <div class="flex justify-between items-center mb-3">
+      <span class="mono text-xs" style="color:var(--muted)">ORDER</span>
+      <span class="mono text-xs">#<%= order.id.substring(0,8).toUpperCase() %></span>
+    </div>
+    <div class="flex items-center gap-3 pb-4 mb-4" style="border-bottom:1px solid var(--border)">
+      <% if (order.logo_url) { %>
+        <img src="<%= order.logo_url %>" class="w-10 h-10 rounded-lg object-cover">
+      <% } else { %>
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--surface2)">📦</div>
+      <% } %>
+      <div>
+        <div class="font-bold"><%= order.product_name %></div>
+        <div class="mono text-sm" style="color:var(--muted)"><%= order.customer_name %> · <%= order.customer_email %></div>
+      </div>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span style="color:var(--muted)">Total Bayar</span>
+      <span class="mono font-bold" style="color:var(--accent)">Rp <%= Number(order.unique_amount).toLocaleString('id-ID') %></span>
+    </div>
+  </div>
+
+  <% if (isPending) { %>
+  <!-- QRIS Section -->
+  <div class="card p-6 text-center mb-5">
+    <p class="text-sm font-semibold mb-1">Scan QRIS dengan nominal <strong style="color:var(--accent)">TEPAT:</strong></p>
+    <div class="mono text-2xl font-black my-2" style="color:var(--accent)">Rp <%= Number(order.unique_amount).toLocaleString('id-ID') %></div>
+    <p class="text-xs mb-4" style="color:var(--muted)">Bayar dengan nominal tepat untuk verifikasi otomatis</p>
+
+    <% if (order.qris_url) { %>
+      <div class="inline-block p-3 rounded-xl bg-white mb-4">
+        <img src="<%= order.qris_url %>" alt="QRIS" class="w-52 h-52 object-contain">
+      </div>
+    <% } else { %>
+      <div class="w-52 h-52 mx-auto rounded-xl flex items-center justify-center mb-4" style="background:var(--surface2);border:2px dashed var(--border)">
+        <p class="text-xs" style="color:var(--muted)">QRIS tidak tersedia</p>
+      </div>
+    <% } %>
+
+    <!-- Countdown -->
+    <div id="countdown" class="mono text-sm" style="color:var(--muted)">Sisa waktu: menghitung...</div>
+  </div>
+
+  <!-- Status Checker -->
+  <div id="status-box" class="card p-4 text-center mb-5">
+    <div class="flex items-center justify-center gap-2 text-sm" style="color:var(--muted)">
+      <div class="w-4 h-4 rounded-full border-2 spin" style="border-color:var(--accent);border-top-color:transparent"></div>
+      Mengecek pembayaran otomatis...
+    </div>
+  </div>
+
+  <script>
+    const orderId = '<%= order.id %>';
+    const expiredAt = <%= expiredTs %>;
+    let pollInterval;
+
+    function formatTime(ms) {
+      const s = Math.max(0, Math.floor(ms / 1000));
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${m}:${sec.toString().padStart(2,'0')}`;
+    }
+
+    function updateCountdown() {
+      const remaining = expiredAt - Date.now();
+      const el = document.getElementById('countdown');
+      if (remaining <= 0) {
+        el.textContent = 'Waktu habis!';
+        el.style.color = '#ff6666';
+      } else {
+        el.textContent = `Sisa waktu: ${formatTime(remaining)}`;
+        el.style.color = remaining < 60000 ? '#ff6666' : 'var(--muted)';
+      }
+    }
+
+    async function checkStatus() {
+      try {
+        const res = await fetch(`/api/order/${orderId}/status`);
+        const data = await res.json();
+        const box = document.getElementById('status-box');
+
+        if (data.status === 'paid') {
+          clearInterval(pollInterval);
+          box.innerHTML = `<div style="color:#00ff88;font-weight:bold">✅ Pembayaran terdeteksi! Memuat key...</div>`;
+          setTimeout(() => location.reload(), 1200);
+        } else if (data.status === 'expired') {
+          clearInterval(pollInterval);
+          location.reload();
+        } else if (data.status === 'paid_no_stock') {
+          clearInterval(pollInterval);
+          box.innerHTML = `<div style="color:#ffcc44">⚠️ Pembayaran diterima tapi stok habis. Hubungi admin.</div>`;
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    pollInterval = setInterval(checkStatus, 5000);
+    checkStatus();
+  </script>
+  <% } %>
+
+  <% if (isPaid && order.key_value) { %>
+  <!-- Key Display -->
+  <div class="card p-6 mb-5" style="border-color:var(--accent);box-shadow:0 0 24px #00d4ff22">
+    <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--accent)">Your Key</div>
+    <div class="flex items-center gap-3">
+      <div id="key-display" class="mono font-bold text-lg flex-1 px-4 py-3 rounded-xl break-all" style="background:var(--surface2);color:var(--text)"><%= order.key_value %></div>
+      <button onclick="copyKey()" class="btn btn-outline py-3 px-4 text-sm" style="white-space:nowrap" id="copy-btn">Salin</button>
+    </div>
+    <p class="text-xs mt-3" style="color:var(--muted)">⚠️ Simpan key ini. Pesanan tidak bisa dibuka ulang setelah kamu meninggalkan halaman ini.</p>
+  </div>
+  <script>
+    function copyKey() {
+      navigator.clipboard.writeText('<%= order.key_value.replace(/'/g, "\\'") %>').then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = '✅ Disalin!';
+        setTimeout(() => btn.textContent = 'Salin', 2000);
+      });
+    }
+  </script>
+  <% } %>
+
+  <% if (isExpired) { %>
+  <a href="/produk/<%= order.slug %>" class="btn btn-primary w-full block text-center">Buat Pesanan Baru</a>
+  <% } %>
+
+  <a href="/" class="btn btn-outline w-full block text-center mt-3">Kembali ke Toko</a>
+</main>
+
+<%- include('partials/footer') %>

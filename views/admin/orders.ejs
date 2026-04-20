@@ -1,0 +1,73 @@
+<% pageTitle = 'Pesanan' %>
+<%- include('../partials/header') %>
+
+<main class="max-w-6xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-black">Pesanan</h1>
+      <p class="text-sm mt-1" style="color:var(--muted)">Riwayat semua transaksi</p>
+    </div>
+    <a href="/admin" class="btn btn-outline text-sm py-2 px-4">← Dashboard</a>
+  </div>
+
+  <!-- Filter -->
+  <div class="flex gap-2 mb-6 flex-wrap">
+    <a href="/admin/orders" class="badge <%= !status ? 'badge-green' : 'badge-gray' %>" style="cursor:pointer;font-size:.8rem;padding:.35rem .8rem">Semua</a>
+    <a href="/admin/orders?status=paid" class="badge <%= status==='paid' ? 'badge-green' : 'badge-gray' %>" style="cursor:pointer;font-size:.8rem;padding:.35rem .8rem">Terbayar</a>
+    <a href="/admin/orders?status=pending" class="badge <%= status==='pending' ? 'badge-yellow' : 'badge-gray' %>" style="cursor:pointer;font-size:.8rem;padding:.35rem .8rem">Pending</a>
+    <a href="/admin/orders?status=expired" class="badge <%= status==='expired' ? 'badge-gray' : 'badge-gray' %>" style="cursor:pointer;font-size:.8rem;padding:.35rem .8rem">Expired</a>
+  </div>
+
+  <div class="card overflow-hidden">
+    <% if (orders.length === 0) { %>
+    <div class="p-12 text-center" style="color:var(--muted)">Tidak ada pesanan</div>
+    <% } else { %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order ID</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Pembeli</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Nominal Unik</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Key</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Waktu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(o => { %>
+          <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
+            <td class="p-4">
+              <a href="/order/<%= o.id %>" target="_blank" class="mono text-xs hover:text-[var(--accent)] transition-colors" style="color:var(--muted)">#<%= o.id.substring(0,8).toUpperCase() %></a>
+            </td>
+            <td class="p-4 font-semibold"><%= o.product_name %></td>
+            <td class="p-4">
+              <div style="color:var(--text)"><%= o.customer_name %></div>
+              <div class="mono text-xs" style="color:var(--muted)"><%= o.customer_email %></div>
+            </td>
+            <td class="p-4 mono" style="color:var(--accent)">Rp <%= Number(o.unique_amount).toLocaleString('id-ID') %></td>
+            <td class="p-4 mono text-xs" style="color:var(--muted)">
+              <% if (o.key_value) { %>
+                <span title="<%= o.key_value %>" style="cursor:help"><%= o.key_value.length > 20 ? o.key_value.substring(0,20)+'…' : o.key_value %></span>
+              <% } else { %>
+                —
+              <% } %>
+            </td>
+            <td class="p-4">
+              <span class="badge <%=
+                o.status === 'paid' ? 'badge-green' :
+                o.status === 'pending' ? 'badge-yellow' : 'badge-gray'
+              %>"><%= o.status.toUpperCase() %></span>
+            </td>
+            <td class="p-4 mono text-xs" style="color:var(--muted)"><%= o.created_at %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

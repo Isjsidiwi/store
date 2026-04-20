@@ -1,0 +1,54 @@
+<% pageTitle = 'Edit Produk' %>
+<%- include('../partials/header') %>
+
+<main class="max-w-2xl mx-auto px-6 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <a href="/admin/products" class="mono text-xs mb-2 inline-block" style="color:var(--muted)">← Kembali ke Produk</a>
+      <h1 class="text-3xl font-black">Edit Produk</h1>
+    </div>
+    <a href="/admin/products/<%= product.id %>/keys" class="btn btn-outline text-sm py-2 px-4">Kelola Keys</a>
+  </div>
+
+  <% if (success) { %>
+  <div class="p-3 rounded-xl mb-5 text-sm" style="background:#00ff8815;border:1px solid #00ff8833;color:#00ff88">✅ <%= success %></div>
+  <% } %>
+
+  <div class="card p-6">
+    <form method="POST" action="/admin/products/<%= product.id %>/edit" class="flex flex-col gap-4">
+      <div>
+        <label class="block text-sm font-semibold mb-2">Nama Produk</label>
+        <input type="text" name="name" class="field" value="<%= product.name %>" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Harga (Rp)</label>
+        <input type="number" name="price" class="field" value="<%= product.price %>" min="100" required>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">URL Logo</label>
+        <input type="url" name="logo_url" class="field" value="<%= product.logo_url || '' %>">
+        <% if (product.logo_url) { %>
+        <img src="<%= product.logo_url %>" class="w-16 h-16 rounded-xl object-cover mt-2" style="border:1px solid var(--border)">
+        <% } %>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Kategori</label>
+        <input type="text" name="category" class="field" value="<%= product.category %>">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Deskripsi</label>
+        <textarea name="description" class="field" rows="4"><%= product.description %></textarea>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="checkbox" name="is_active" id="is_active" value="1" <%= product.is_active ? 'checked' : '' %> class="w-4 h-4 accent-[var(--accent)]">
+        <label for="is_active" class="text-sm font-semibold cursor-pointer">Produk aktif (tampil di toko)</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn btn-primary px-8">Simpan Perubahan</button>
+        <a href="/admin/products" class="btn btn-outline px-6">Batal</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
