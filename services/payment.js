@@ -45,11 +45,6 @@ async function makeProxyRequest(targetUrl, method, headers, data) {
     throw error;
   }
 }
-      headers: error.config?.headers,
-    });
-    throw error;
-  }
-}
 
 // Generate unique amount suffix (001–999) agar tiap order punya jumlah unik
 function generateUniqueSuffix() {
