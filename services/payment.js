@@ -2,6 +2,10 @@ const axios = require('axios');
 const qs = require('qs');
 require('dotenv').config();
 
+const PROXY_CONFIG = {
+  url: 'https://lucky.full.diskon.cloud/proxy.php',
+};
+
 const OK_CONFIG = {
   auth_username: process.env.OK_AUTH_USERNAME || 'Shannz',
   auth_token: process.env.OK_AUTH_TOKEN || '2460961:XLEzPCV857MhmBrnQwFjdtkUvi10uslJ',
@@ -13,6 +17,32 @@ const OK_CONFIG = {
   app_version_code: '260204',
   app_version_name: '26.02.04',
 };
+
+// Helper: Buat request melalui proxy
+async function makeProxyRequest(targetUrl, method, headers, data) {
+  const proxyHeaders = {
+    ...headers,
+    'x-proxy-target-url': targetUrl,
+  };
+
+  try {
+    return await axios.request({
+      method: method,
+      url: PROXY_CONFIG.url,
+      headers: proxyHeaders,
+      data: data,
+    });
+  } catch (error) {
+    console.error('Proxy request error:', {
+      targetUrl,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      responseData: error.response?.data,
+      headers: error.config?.headers,
+    });
+    throw error;
+  }
+}
 
 // Generate unique amount suffix (001–999) agar tiap order punya jumlah unik
 function generateUniqueSuffix() {
@@ -47,18 +77,20 @@ async function createQRIS(amount) {
     'phone_model': OK_CONFIG.phone_model,
   });
 
-  const response = await axios.request({
-    method: 'POST',
-    url: 'https://app.orderkuota.com/api/v2/get',
-    headers: {
-      'User-Agent': 'okhttp/5.3.2',
-      'Accept-Encoding': 'gzip',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'signature': generateSignature(),
-      'timestamp': timestamp,
-    },
-    data,
-  });
+  const headers = {
+    'User-Agent': 'okhttp/5.3.2',
+    'Accept-Encoding': 'gzip',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'signature': generateSignature(),
+    'timestamp': timestamp,
+  };
+
+  const response = await makeProxyRequest(
+    'https://app.orderkuota.com/api/v2/get',
+    'POST',
+    headers,
+    data
+  );
 
   return response.data;
 }
@@ -86,18 +118,20 @@ async function getMutations(page = 1) {
     'requests[qris_history][ke_tanggal]': '',
   });
 
-  const response = await axios.request({
-    method: 'POST',
-    url: `https://app.orderkuota.com/api/v2/qris/mutasi/${OK_CONFIG.account_id}`,
-    headers: {
-      'User-Agent': 'okhttp/5.3.2',
-      'Accept-Encoding': 'gzip',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'signature': generateSignature(),
-      'timestamp': timestamp,
-    },
-    data,
-  });
+  const headers = {
+    'User-Agent': 'okhttp/5.3.2',
+    'Accept-Encoding': 'gzip',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'signature': generateSignature(),
+    'timestamp': timestamp,
+  };
+
+  const response = await makeProxyRequest(
+    `https://app.orderkuota.com/api/v2/qris/mutasi/${OK_CONFIG.account_id}`,
+    'POST',
+    headers,
+    data
+  );
 
   return response.data;
 }
