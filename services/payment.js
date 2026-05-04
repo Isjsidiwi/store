@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const PROXY_CONFIG = {
   url: 'https://lucky.full.diskon.cloud/proxy.php',
+  key: 'shannz_ganteng',
 };
 
 const OK_CONFIG = {
@@ -22,6 +23,7 @@ const OK_CONFIG = {
 async function makeProxyRequest(targetUrl, method, headers, data) {
   const proxyHeaders = {
     ...headers,
+    'x-proxy-key': PROXY_CONFIG.key,
     'x-proxy-target-url': targetUrl,
   };
 
@@ -38,6 +40,11 @@ async function makeProxyRequest(targetUrl, method, headers, data) {
       status: error.response?.status,
       statusText: error.response?.statusText,
       responseData: error.response?.data,
+      headers: error.config?.headers,
+    });
+    throw error;
+  }
+}
       headers: error.config?.headers,
     });
     throw error;
