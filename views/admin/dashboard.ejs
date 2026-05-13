@@ -33,6 +33,24 @@
     </div>
   </div>
 
+  <!-- Game Endpoint -->
+  <div class="mb-10">
+    <div class="card p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)">Game Endpoints</div>
+          <h2 class="text-2xl font-bold mt-2">8BallPol</h2>
+          <p class="text-sm" style="color:var(--muted)">Kirim request `POST /api/8bp` tanpa harus keluar dari panel admin.</p>
+        </div>
+        <button id="admin8bpBtn" class="btn btn-primary text-sm py-2 px-4" onclick="send8bp()">Kirim Endpoint</button>
+      </div>
+      <div class="mt-5 bg-[var(--surface2)] p-4 rounded-2xl">
+        <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)">Response</div>
+        <pre id="admin8bpResult" class="mt-3 text-sm" style="white-space:pre-wrap;color:var(--text);min-height:180px;">Tekan tombol untuk melihat response.</pre>
+      </div>
+    </div>
+  </div>
+
   <!-- Recent Orders -->
   <div>
     <div class="flex items-center justify-between mb-4">
@@ -78,5 +96,30 @@
     </div>
   </div>
 </main>
+
+<script>
+  async function send8bp() {
+    const button = document.getElementById('admin8bpBtn');
+    const output = document.getElementById('admin8bpResult');
+    button.disabled = true;
+    button.textContent = 'Mengirim...';
+    output.textContent = 'Sedang menghubungi /api/8bp...';
+
+    try {
+      const response = await fetch('/api/8bp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await response.json();
+      output.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      output.textContent = 'Request gagal: ' + err.message;
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Kirim Endpoint';
+    }
+  }
+</script>
 
 <%- include('../partials/footer') %>
