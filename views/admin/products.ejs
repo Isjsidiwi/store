@@ -22,10 +22,7 @@
         <label class="block text-sm font-semibold mb-2">Nama Produk <span style="color:#ff6666">*</span></label>
         <input type="text" name="name" class="field" placeholder="Contoh: VPN Premium 1 Bulan" required>
       </div>
-      <div>
-        <label class="block text-sm font-semibold mb-2">Harga (Rp) <span style="color:#ff6666">*</span></label>
-        <input type="number" name="price" class="field" placeholder="50000" min="100" required>
-      </div>
+      <input type="hidden" name="price" value="0">
       <div>
         <label class="block text-sm font-semibold mb-2">URL Logo</label>
         <input type="url" name="logo_url" class="field" placeholder="https://example.com/logo.png">
@@ -57,8 +54,7 @@
         <thead>
           <tr style="border-bottom:1px solid var(--border)">
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
-            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Harga</th>
-            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Stok</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Stok Total</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Aksi</th>
           </tr>
@@ -79,7 +75,6 @@
                 </div>
               </div>
             </td>
-            <td class="p-4 mono" style="color:var(--accent)">Rp <%= Number(p.price).toLocaleString('id-ID') %></td>
             <td class="p-4">
               <span class="badge <%= p.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= p.stock %> key</span>
             </td>

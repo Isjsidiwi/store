@@ -5,42 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '' %><%= storeName %></title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#08080f;--surface:#111120;--surface2:#1a1a2e;--border:#ffffff12;--accent:#00d4ff;--accent2:#7c3aed;--text:#e8e8f0;--muted:#8888a8}
-    *{box-sizing:border-box}
-    body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh}
-    .mono{font-family:'Space Mono',monospace}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:border-color .2s,transform .2s,box-shadow .2s}
-    .card:hover{border-color:var(--accent);box-shadow:0 0 20px #00d4ff18;transform:translateY(-2px)}
-    .btn{display:inline-block;border-radius:8px;padding:.65rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;text-align:center;transition:opacity .2s,transform .15s;cursor:pointer}
-    .btn-primary{background:linear-gradient(135deg,var(--accent),#0099cc);color:#000}
-    .btn-primary:hover{opacity:.9;transform:scale(1.02)}
-    .btn-outline{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-    .btn-outline:hover{border-color:var(--accent)}
-    .badge{font-size:.7rem;font-family:'Space Mono',monospace;padding:.2rem .55rem;border-radius:4px;font-weight:700;letter-spacing:.04em}
-    .badge-green{background:#00ff8822;color:#00ff88;border:1px solid #00ff8844}
-    .badge-red{background:#ff444422;color:#ff6666;border:1px solid #ff444444}
-    .badge-yellow{background:#ffaa0022;color:#ffcc44;border:1px solid #ffaa0044}
-    .badge-gray{background:#88888822;color:#aaa;border:1px solid #88888844}
-    .field{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.65rem 1rem;font-family:'Syne',sans-serif;transition:border-color .2s;outline:none;width:100%}
-    .field:focus{border-color:var(--accent)}
-    .mesh{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 20%,#00d4ff08 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,#7c3aed08 0%,transparent 50%);pointer-events:none;z-index:0}
-    .wrap{position:relative;z-index:1}
+    :root {
+      --bg: #09090b; /* Very dark zinc */
+      --surface: #18181b; /* Dark zinc */
+      --surface2: #27272a;
+      --border: #3f3f46;
+      --accent: #3b82f6; /* Blue 500 */
+      --accent-hover: #2563eb;
+      --text: #f8fafc;
+      --muted: #a1a1aa;
+    }
+    * { box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .card:hover { border-color: #52525b; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; padding: 0.75rem 1.5rem; font-weight: 600; font-size: 0.95rem; transition: all 0.2s ease; cursor: pointer; }
+    .btn-primary { background: var(--text); color: var(--bg); border: 1px solid transparent; }
+    .btn-primary:hover { background: #e2e8f0; transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--surface2); border-color: #52525b; }
+    
+    .badge { font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 9999px; letter-spacing: 0.02em; }
+    .badge-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+    .badge-gray { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    
+    .field { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.75rem 1rem; font-family: 'Inter', sans-serif; transition: all 0.2s ease; outline: none; width: 100%; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); }
+    .field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+    
+    .mesh { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, rgba(59,130,246,0.05) 0%, transparent 40%); pointer-events: none; z-index: 0; }
+    .wrap { position: relative; z-index: 1; }
+    
+    nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(9, 9, 11, 0.8) !important; border-bottom: 1px solid var(--border); }
   </style>
   <%- typeof extraHead !== 'undefined' ? extraHead : '' %>
 </head>
 <body>
 <div class="mesh"></div>
 <div class="wrap">
-<nav style="background:var(--surface);border-bottom:1px solid var(--border)" class="sticky top-0 z-50 px-6 py-4">
+<nav class="sticky top-0 z-50 px-6 py-4">
   <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <a href="/" class="text-2xl font-black" style="color:var(--accent)"><%= storeName %></a>
-    <div class="flex items-center gap-4 text-sm">
-      <a href="/" class="transition-colors hover:text-[var(--accent)]" style="color:var(--muted)">Beranda</a>
+    <a href="/" class="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+      <span class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-sm">✦</span>
+      <%= storeName %>
+    </a>
+    <div class="flex items-center gap-5 text-sm font-medium">
+      <a href="/" class="transition-colors hover:text-white" style="color:var(--muted)">Katalog</a>
       <% if (isAdmin) { %>
-        <a href="/admin" class="btn btn-primary py-1.5 px-4 text-sm">Admin</a>
-        <a href="/admin/logout" class="text-xs transition-colors" style="color:var(--muted)">Logout</a>
+        <a href="/admin" class="transition-colors hover:text-white" style="color:var(--muted)">Dashboard</a>
+        <a href="/admin/logout" class="transition-colors text-red-400 hover:text-red-300">Logout</a>
       <% } %>
     </div>
   </div>

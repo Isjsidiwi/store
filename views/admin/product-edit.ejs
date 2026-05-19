@@ -20,10 +20,7 @@
         <label class="block text-sm font-semibold mb-2">Nama Produk</label>
         <input type="text" name="name" class="field" value="<%= product.name %>" required>
       </div>
-      <div>
-        <label class="block text-sm font-semibold mb-2">Harga (Rp)</label>
-        <input type="number" name="price" class="field" value="<%= product.price %>" min="100" required>
-      </div>
+      <input type="hidden" name="price" value="0">
       <div>
         <label class="block text-sm font-semibold mb-2">URL Logo</label>
         <input type="url" name="logo_url" class="field" value="<%= product.logo_url || '' %>">
@@ -48,6 +45,60 @@
         <a href="/admin/products" class="btn btn-outline px-6">Batal</a>
       </div>
     </form>
+  </div>
+  <div class="card p-6 mt-10" style="border-color:var(--accent);box-shadow:0 0 24px #00d4ff11">
+    <h2 class="text-xl font-black mb-5">Manajemen Jenis (Varian)</h2>
+    
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">NAMA JENIS</th>
+            <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">HARGA</th>
+            <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">STOK READY</th>
+            <th class="py-3 px-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (variants.length === 0) { %>
+            <tr><td colspan="4" class="py-8 text-center text-sm" style="color:var(--muted)">Belum ada varian. Tambahkan di bawah.</td></tr>
+          <% } else { %>
+            <% variants.forEach(v => { %>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td class="py-4 px-2 font-bold"><%= v.name %></td>
+                <td class="py-4 px-2 mono">Rp <%= Number(v.price).toLocaleString('id-ID') %></td>
+                <td class="py-4 px-2">
+                  <span class="badge <%= v.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= v.stock %> stok</span>
+                </td>
+                <td class="py-4 px-2 text-right">
+                  <form method="POST" action="/admin/products/<%= product.id %>/variants/<%= v.id %>/delete" onsubmit="return confirm('Hapus varian ini?')">
+                    <button type="submit" class="btn text-xs py-1 px-3" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433">Hapus</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add Variant Form -->
+    <div class="p-4 rounded-xl" style="background:var(--surface2)">
+      <h3 class="text-sm font-bold mb-4 uppercase tracking-widest" style="color:var(--muted)">+ Tambah Jenis Baru</h3>
+      <form method="POST" action="/admin/products/<%= product.id %>/variants/add" class="flex flex-wrap gap-3">
+        <div class="flex-1 min-w-[200px]">
+          <label class="block text-xs font-bold mb-1 ml-1" style="color:var(--muted)">Nama Jenis (misal: 1 Hari / 5 Hari)</label>
+          <input type="text" name="name" class="field text-sm" placeholder="Contoh: 1 Hari" required>
+        </div>
+        <div class="w-40">
+          <label class="block text-xs font-bold mb-1 ml-1" style="color:var(--muted)">Harga (Rp)</label>
+          <input type="number" name="price" class="field text-sm" placeholder="5000" required>
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="btn btn-primary px-6 h-[42px]">+ Simpan</button>
+        </div>
+      </form>
+    </div>
   </div>
 </main>
 

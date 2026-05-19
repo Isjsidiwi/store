@@ -31,10 +31,10 @@ router.get('/order/:id/status', async (req, res) => {
     const paid = await checkPayment(order.unique_amount, order.created_at);
 
     if (paid) {
-      // Ambil key tersedia untuk produk ini
+      // Ambil key tersedia untuk varian ini
       const { rows: keyRows } = await db.execute(
-        `SELECT id, key_value FROM keys WHERE product_id = ? AND is_used = 0 LIMIT 1`,
-        [order.product_id]
+        `SELECT id, key_value FROM keys WHERE variant_id = ? AND is_used = 0 LIMIT 1`,
+        [order.variant_id]
       );
 
       if (!keyRows.length) {
