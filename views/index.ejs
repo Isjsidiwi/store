@@ -1,52 +1,68 @@
 <% pageTitle = 'Beranda' %>
 <%- include('partials/header') %>
 
-<main class="max-w-6xl mx-auto px-6 py-12">
-  <div class="text-center mb-16">
-    <div class="mono inline-block text-xs border px-3 py-1 rounded-full mb-5" style="color:var(--accent);border-color:var(--accent);opacity:.8"><%= storeTagline %></div>
-    <h1 class="text-5xl md:text-7xl font-black tracking-tight leading-none mb-5">
-      Produk Digital<br><span style="color:var(--accent)">Instant</span>
+<main class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+  <div class="text-center mb-24 flex flex-col items-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-6" style="border-color:var(--border); background:rgba(255,255,255,0.03)">
+      <span class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>
+      <span class="text-xs font-semibold tracking-wide uppercase text-white"><%= storeTagline %></span>
+    </div>
+    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6 max-w-4xl">
+      Produk Digital <br class="hidden md:block">
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Dikirim Instan</span>
     </h1>
-    <p class="text-lg max-w-md mx-auto" style="color:var(--muted)">Bayar QRIS — key langsung dikirim otomatis. Proses 24/7 tanpa menunggu.</p>
+    <p class="text-lg md:text-xl max-w-2xl text-zinc-400">Pilih produk, bayar dengan QRIS, dan dapatkan key secara otomatis dalam hitungan detik. Aktif 24/7.</p>
   </div>
 
   <% if (categories.length > 1) { %>
-  <div class="flex flex-wrap gap-2 mb-8 justify-center">
-    <a href="/" class="badge badge-green" style="cursor:pointer">Semua</a>
+  <div class="flex flex-wrap gap-2 mb-10 justify-center">
+    <a href="/" class="badge badge-green hover:scale-105 transition-transform cursor-pointer">Semua</a>
     <% categories.forEach(c => { %>
-      <a href="/?cat=<%= c.category %>" class="badge badge-gray" style="cursor:pointer"><%= c.category %></a>
+      <a href="/?cat=<%= c.category %>" class="badge badge-gray hover:bg-zinc-800 transition-colors cursor-pointer"><%= c.category %></a>
     <% }) %>
   </div>
   <% } %>
 
   <% if (products.length === 0) { %>
-  <div class="text-center py-20" style="color:var(--muted)">
-    <div class="text-6xl mb-4">📦</div>
-    <p class="text-xl font-semibold">Belum ada produk</p>
+  <div class="text-center py-20 text-zinc-500 border border-dashed rounded-3xl" style="border-color:var(--border)">
+    <div class="text-6xl mb-4 grayscale opacity-50">📦</div>
+    <p class="text-xl font-medium">Katalog kosong</p>
   </div>
   <% } else { %>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <% products.forEach(p => { %>
-    <a href="/produk/<%= p.slug %>" style="text-decoration:none;color:inherit">
-      <div class="card p-5 flex flex-col gap-4 h-full">
-        <div class="flex items-center gap-3">
+    <a href="/produk/<%= p.slug %>" class="group block h-full">
+      <div class="card p-6 flex flex-col gap-4 h-full relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        
+        <div class="flex items-start gap-4 relative z-10">
           <% if (p.logo_url) { %>
-            <img src="<%= p.logo_url %>" alt="<%= p.name %>" class="w-12 h-12 rounded-xl object-cover" style="border:1px solid var(--border)">
+            <img src="<%= p.logo_url %>" alt="<%= p.name %>" class="w-14 h-14 rounded-xl object-cover border border-zinc-700/50 shadow-sm">
           <% } else { %>
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:var(--surface2)">📦</div>
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl border border-zinc-700/50" style="background:var(--surface2)">📦</div>
           <% } %>
-          <div>
-            <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)"><%= p.category %></div>
-            <div class="font-bold"><%= p.name %></div>
+          <div class="pt-1">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-1"><%= p.category %></div>
+            <h3 class="font-bold text-lg leading-tight text-zinc-100 group-hover:text-blue-400 transition-colors"><%= p.name %></h3>
           </div>
         </div>
-        <p class="text-sm flex-1 leading-relaxed" style="color:var(--muted)"><%= p.description ? p.description.substring(0,100) + (p.description.length > 100 ? '...' : '') : 'Produk digital.' %></p>
-        <div class="flex items-center justify-between mt-auto pt-3" style="border-top:1px solid var(--border)">
+        
+        <p class="text-sm flex-1 leading-relaxed text-zinc-400 relative z-10">
+          <%= p.description ? p.description.substring(0,100) + (p.description.length > 100 ? '...' : '') : 'Produk digital.' %>
+        </p>
+        
+        <div class="flex items-end justify-between mt-4 pt-4 border-t border-zinc-800/50 relative z-10">
           <div>
-            <div class="mono font-bold text-lg" style="color:var(--accent)">Rp <%= Number(p.price).toLocaleString('id-ID') %></div>
-            <span class="badge <%= p.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= p.stock > 0 ? 'Stok ' + p.stock : 'Habis' %></span>
+            <div class="font-semibold text-sm text-zinc-400 mb-1">
+              Harga sesuai jenis
+            </div>
+            <div>
+              <span class="badge <%= p.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= p.stock > 0 ? 'Stok ' + p.stock : 'Habis' %></span>
+            </div>
           </div>
-          <div class="btn btn-primary text-sm py-2 px-4"><%= p.stock > 0 ? 'Beli Sekarang' : 'Habis' %></div>
+          <div class="btn <%= p.stock > 0 ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-800 text-zinc-500' %> text-sm py-2 px-4 shadow-sm">
+            <%= p.stock > 0 ? 'Lihat Jenis' : 'Habis' %>
+          </div>
         </div>
       </div>
     </a>

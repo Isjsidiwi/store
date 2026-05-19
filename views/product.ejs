@@ -2,56 +2,92 @@
 <%- include('partials/header') %>
 
 <main class="max-w-3xl mx-auto px-6 py-12">
-  <a href="/" class="mono text-xs mb-8 inline-flex items-center gap-2 hover:text-[var(--accent)] transition-colors" style="color:var(--muted)">← Kembali</a>
+  <a href="/" class="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors mb-10">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    Kembali ke Katalog
+  </a>
 
-  <div class="card p-8">
-    <div class="flex items-start gap-5 mb-6">
+  <div class="card p-8 md:p-10 border-zinc-800">
+    <div class="flex items-start gap-6 mb-8">
       <% if (product.logo_url) { %>
-        <img src="<%= product.logo_url %>" alt="<%= product.name %>" class="w-20 h-20 rounded-2xl object-cover" style="border:1px solid var(--border)">
+        <img src="<%= product.logo_url %>" alt="<%= product.name %>" class="w-24 h-24 rounded-2xl object-cover border border-zinc-700/50 shadow-lg">
       <% } else { %>
-        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl" style="background:var(--surface2)">📦</div>
+        <div class="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl border border-zinc-700/50 bg-zinc-800/50 shadow-lg">📦</div>
       <% } %>
-      <div class="flex-1">
-        <div class="mono text-xs uppercase tracking-widest mb-1" style="color:var(--muted)"><%= product.category %></div>
-        <h1 class="text-3xl font-black mb-2"><%= product.name %></h1>
-        <span class="badge <%= product.stock > 0 ? 'badge-green' : 'badge-red' %>">
-          <%= product.stock > 0 ? 'Stok tersedia: ' + product.stock : 'Stok habis' %>
+      <div class="flex-1 pt-1">
+        <div class="text-[11px] font-bold uppercase tracking-widest text-blue-400 mb-2"><%= product.category %></div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white"><%= product.name %></h1>
+        <span class="badge <%= product.stock > 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20' %>">
+          <%= product.stock > 0 ? 'Tersedia ' + product.stock + ' Stok' : 'Stok Habis' %>
         </span>
       </div>
     </div>
 
     <% if (product.description) { %>
-    <div class="mb-6 p-4 rounded-xl text-sm leading-relaxed" style="background:var(--surface2);color:var(--muted)">
+    <div class="mb-10 p-5 rounded-2xl text-sm leading-relaxed text-zinc-300 bg-zinc-800/30 border border-zinc-700/30">
       <%= product.description %>
     </div>
     <% } %>
 
-    <div class="flex items-center justify-between py-4 mb-6" style="border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-      <div>
-        <div class="text-sm mb-1" style="color:var(--muted)">Harga</div>
-        <div class="mono font-bold text-3xl" style="color:var(--accent)">Rp <%= Number(product.price).toLocaleString('id-ID') %></div>
-      </div>
-      <div class="text-right">
-        <div class="text-sm mb-1" style="color:var(--muted)">Pembayaran</div>
-        <div class="mono text-sm">QRIS</div>
+    <div class="mb-10">
+      <h3 class="text-xs font-bold uppercase tracking-wider mb-4 text-zinc-500">Pilih Jenis Produk:</h3>
+      <div class="flex flex-col gap-3">
+        <% variants.forEach(v => { %>
+          <div class="variant-item group relative p-5 rounded-2xl flex items-center justify-between border border-zinc-800 bg-zinc-900/50 hover:border-blue-500/50 transition-all cursor-pointer <%= v.stock > 0 ? '' : 'opacity-50 grayscale cursor-not-allowed' %>" 
+               onclick="<%= v.stock > 0 ? `selectVariant(${v.id}, '${product.slug}')` : '' %>"
+               id="variant-<%= v.id %>">
+            <div>
+              <div class="font-bold text-lg text-zinc-100 group-hover:text-blue-400 transition-colors"><%= v.name %></div>
+              <div class="mt-1 text-xs font-medium <%= v.stock > 0 ? 'text-green-400' : 'text-red-400' %>">
+                <%= v.stock > 0 ? 'Stok: ' + v.stock : 'Stok habis' %>
+              </div>
+            </div>
+            <div class="font-bold text-xl text-white">
+              Rp <%= Number(v.price).toLocaleString('id-ID') %>
+            </div>
+          </div>
+        <% }) %>
       </div>
     </div>
 
-    <div class="p-4 rounded-xl mb-6 text-sm" style="background:#00d4ff08;border:1px solid #00d4ff22">
-      <div class="font-bold mb-2" style="color:var(--accent)">ℹ️ Cara Beli</div>
-      <ol class="list-decimal list-inside space-y-1" style="color:var(--muted)">
-        <li>Klik tombol Beli & isi nama serta email</li>
-        <li>Scan QRIS yang muncul dengan jumlah <strong style="color:var(--text)">tepat</strong></li>
-        <li>Key dikirim otomatis setelah pembayaran terdeteksi</li>
-        <li>Simpan email kamu untuk cek pesanan</li>
+    <div class="p-5 rounded-2xl mb-8 text-sm bg-blue-500/5 border border-blue-500/10">
+      <div class="font-bold mb-3 text-blue-400 flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        Cara Beli Instan
+      </div>
+      <ol class="list-decimal list-inside space-y-2 text-zinc-400">
+        <li>Pilih jenis produk pada daftar di atas</li>
+        <li>Isi nama serta email di halaman checkout</li>
+        <li>Scan kode QRIS dengan nominal pembayaran <strong class="text-white">tepat</strong></li>
+        <li>Produk digital (Key) langsung dikirim otomatis!</li>
       </ol>
     </div>
 
-    <% if (product.stock > 0) { %>
-      <a href="/checkout/<%= product.slug %>" class="btn btn-primary w-full block text-center">Beli Sekarang →</a>
-    <% } else { %>
-      <div class="btn btn-outline w-full text-center opacity-50 cursor-not-allowed">Stok Habis</div>
-    <% } %>
+    <a id="buy-btn" href="#" class="btn w-full block text-center py-4 text-base bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none border-0 rounded-xl">Pilih Jenis Terlebih Dahulu</a>
+
+    <script>
+      let selectedVariantId = null;
+      function selectVariant(id, slug) {
+        selectedVariantId = id;
+        
+        // Reset styles
+        document.querySelectorAll('.variant-item').forEach(el => {
+          el.style.borderColor = 'var(--border)';
+          el.style.background = 'rgba(24, 24, 27, 0.5)'; // bg-zinc-900/50
+        });
+        
+        // Set active
+        const active = document.getElementById('variant-' + id);
+        active.style.borderColor = 'var(--accent)';
+        active.style.background = 'rgba(59, 130, 246, 0.1)'; // faint blue bg
+        
+        // Update button
+        const btn = document.getElementById('buy-btn');
+        btn.href = '/checkout/' + slug + '/' + id;
+        btn.className = 'btn w-full block text-center py-4 text-base bg-white text-black hover:bg-zinc-200 hover:-translate-y-0.5 transition-all shadow-xl shadow-white/10 rounded-xl font-bold';
+        btn.textContent = 'Beli Sekarang →';
+      }
+    </script>
   </div>
 </main>
 

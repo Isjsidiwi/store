@@ -7,8 +7,17 @@
       <h1 class="text-3xl font-black">Pesanan</h1>
       <p class="text-sm mt-1" style="color:var(--muted)">Riwayat semua transaksi</p>
     </div>
-    <a href="/admin" class="btn btn-outline text-sm py-2 px-4">← Dashboard</a>
+    <div class="flex gap-3">
+      <form method="POST" action="/admin/orders/prune" onsubmit="return confirm('Yakin ingin membersihkan riwayat lama dan hanya menyisakan 50 pesanan terbaru?')">
+        <button type="submit" class="btn btn-outline text-sm py-2 px-4 text-red-400 hover:bg-red-500/10 hover:border-red-500/30">Bersihkan Riwayat (>50)</button>
+      </form>
+      <a href="/admin" class="btn btn-outline text-sm py-2 px-4">← Dashboard</a>
+    </div>
   </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+  <div class="p-3 rounded-xl mb-5 text-sm" style="background:#00ff8815;border:1px solid #00ff8833;color:#00ff88">✅ <%= success %></div>
+  <% } %>
 
   <!-- Filter -->
   <div class="flex gap-2 mb-6 flex-wrap">
@@ -19,6 +28,13 @@
   </div>
 
   <div class="card overflow-hidden">
+    <form method="POST" action="/admin/orders/bulk-delete">
+    <div class="p-4 flex justify-between items-center border-b" style="border-color:var(--border)">
+      <h2 class="font-bold">Daftar Pesanan</h2>
+      <% if (orders.length > 0) { %>
+      <button type="submit" class="btn text-xs py-1.5 px-3" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433" onclick="return confirm('Yakin ingin menghapus semua pesanan yang dicentang?')">Hapus Terpilih</button>
+      <% } %>
+    </div>
     <% if (orders.length === 0) { %>
     <div class="p-12 text-center" style="color:var(--muted)">Tidak ada pesanan</div>
     <% } else { %>
@@ -26,6 +42,7 @@
       <table class="w-full text-sm">
         <thead>
           <tr style="border-bottom:1px solid var(--border)">
+            <th class="p-4 w-10"><input type="checkbox" id="selectAllOrders" class="w-4 h-4 accent-[var(--accent)] cursor-pointer"></th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order ID</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Pembeli</th>
@@ -38,6 +55,7 @@
         <tbody>
           <% orders.forEach(o => { %>
           <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
+            <td class="p-4"><input type="checkbox" name="order_ids" value="<%= o.id %>" class="order-cb w-4 h-4 accent-[var(--accent)] cursor-pointer"></td>
             <td class="p-4">
               <a href="/order/<%= o.id %>" target="_blank" class="mono text-xs hover:text-[var(--accent)] transition-colors" style="color:var(--muted)">#<%= o.id.substring(0,8).toUpperCase() %></a>
             </td>
@@ -67,7 +85,16 @@
       </table>
     </div>
     <% } %>
+    </form>
   </div>
 </main>
+<script>
+  const selectAllOrd = document.getElementById('selectAllOrders');
+  if(selectAllOrd) {
+    selectAllOrd.addEventListener('change', (e) => {
+      document.querySelectorAll('.order-cb').forEach(cb => cb.checked = e.target.checked);
+    });
+  }
+</script>
 
 <%- include('../partials/footer') %>

@@ -21,24 +21,38 @@
   <!-- Add Keys Form -->
   <div class="card p-6 mb-8">
     <h2 class="text-lg font-bold mb-2">Tambah Keys Baru</h2>
-    <p class="text-sm mb-4" style="color:var(--muted)">Masukkan satu key per baris. Setiap baris = 1 stok.</p>
+    <p class="text-sm mb-4" style="color:var(--muted)">Pilih jenis produk dan masukkan satu key per baris.</p>
     <form method="POST" action="/admin/products/<%= product.id %>/keys/add" class="flex flex-col gap-4">
-      <textarea name="keys_text" class="field mono text-sm" rows="8" placeholder="KEY-XXXX-YYYY-ZZZZ&#10;KEY-AAAA-BBBB-CCCC&#10;KEY-1234-5678-9012&#10;..." required style="font-size:.8rem;line-height:1.6"></textarea>
       <div>
-        <button type="submit" class="btn btn-primary px-8">+ Tambah Keys</button>
-        <span class="text-xs ml-3" style="color:var(--muted)">Dapat diisi lisensi, kode akses, serial, akun, dll.</span>
+        <label class="block text-sm font-semibold mb-2">Pilih Jenis (Varian)</label>
+        <select name="variant_id" class="field" required>
+          <option value="" disabled selected>-- Pilih Jenis --</option>
+          <% variants.forEach(v => { %>
+            <option value="<%= v.id %>"><%= v.name %> (Rp <%= Number(v.price).toLocaleString('id-ID') %>)</option>
+          <% }) %>
+        </select>
+        <% if (variants.length === 0) { %>
+          <p class="text-xs mt-2 text-red-400">⚠️ Kamu belum membuat varian produk. Buat varian di halaman Edit Produk terlebih dahulu.</p>
+        <% } %>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-2">Daftar Key</label>
+        <textarea name="keys_text" class="field mono text-sm" rows="8" placeholder="KEY-XXXX-YYYY-ZZZZ&#10;KEY-AAAA-BBBB-CCCC&#10;..." required <%= variants.length === 0 ? 'disabled' : '' %>></textarea>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary px-8" <%= variants.length === 0 ? 'disabled' : '' %>>+ Tambah Keys</button>
       </div>
     </form>
   </div>
 
   <!-- Keys List -->
   <div class="card overflow-hidden">
+    <form method="POST" action="/admin/products/<%= product.id %>/keys/bulk-delete">
     <div class="p-4 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
       <h2 class="font-bold">Semua Keys (<%= keys.length %>)</h2>
-      <div class="flex gap-3 mono text-xs">
-        <span class="badge badge-green"><%= keys.filter(k=>!k.is_used).length %> tersedia</span>
-        <span class="badge badge-gray"><%= keys.filter(k=>k.is_used).length %> terpakai</span>
-      </div>
+      <% if (keys.length > 0) { %>
+      <button type="submit" class="btn text-xs py-1.5 px-3" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433" onclick="return confirm('Yakin ingin menghapus semua key yang dicentang?\\n\\nPERHATIAN: Jika ada key yang sudah terpakai, datanya akan hilang dari riwayat pembeli.')">Hapus Terpilih</button>
+      <% } %>
     </div>
     <% if (keys.length === 0) { %>
     <div class="p-12 text-center" style="color:var(--muted)">
@@ -50,18 +64,23 @@
       <table class="w-full text-sm">
         <thead>
           <tr style="border-bottom:1px solid var(--border)">
+            <th class="p-4 w-10"><input type="checkbox" id="selectAllKeys" class="w-4 h-4 accent-[var(--accent)] cursor-pointer"></th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Jenis</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Key</th>
             <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
-            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order ID</th>
-            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Dipakai</th>
+            <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order</th>
             <th class="p-4"></th>
           </tr>
         </thead>
         <tbody>
           <% keys.forEach(k => { %>
           <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
-            <td class="p-4 mono text-xs" style="color: <%= k.is_used ? 'var(--muted)' : 'var(--text)' %>; text-decoration: <%= k.is_used ? 'line-through' : 'none' %>">
-              <%= k.key_value.length > 40 ? k.key_value.substring(0,40) + '…' : k.key_value %>
+            <td class="p-4"><input type="checkbox" name="key_ids" value="<%= k.id %>" class="key-cb w-4 h-4 accent-[var(--accent)] cursor-pointer"></td>
+            <td class="p-4">
+              <span class="font-bold text-xs"><%= k.variant_name || 'N/A' %></span>
+            </td>
+            <td class="p-4 mono text-xs" style="color: <%= k.is_used ? 'var(--muted)' : 'var(--text)' %>">
+              <%= k.key_value.length > 30 ? k.key_value.substring(0,30) + '…' : k.key_value %>
             </td>
             <td class="p-4">
               <span class="badge <%= k.is_used ? 'badge-gray' : 'badge-green' %>">
@@ -71,13 +90,8 @@
             <td class="p-4 mono text-xs" style="color:var(--muted)">
               <%= k.order_id ? '#' + k.order_id.substring(0,8).toUpperCase() : '-' %>
             </td>
-            <td class="p-4 mono text-xs" style="color:var(--muted)"><%= k.used_at || '-' %></td>
             <td class="p-4">
-              <% if (!k.is_used) { %>
-              <form method="POST" action="/admin/products/<%= product.id %>/keys/<%= k.id %>/delete" onsubmit="return confirm('Hapus key ini?')">
-                <button type="submit" class="btn text-xs py-1 px-2.5" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433">Hapus</button>
-              </form>
-              <% } %>
+              <a href="#" onclick="event.preventDefault(); if(confirm('Hapus key ini? <%= k.is_used ? '\\n\\nPERHATIAN: Key ini sudah terpakai oleh pesanan. Menghapus key akan menghilangkan data key dari riwayat pesanan pembeli.' : '' %>')) { const f = document.createElement('form'); f.method='POST'; f.action='/admin/products/<%= product.id %>/keys/<%= k.id %>/delete'; document.body.appendChild(f); f.submit(); }" class="btn text-xs py-1 px-2.5" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433">Hapus</a>
             </td>
           </tr>
           <% }) %>
@@ -85,7 +99,16 @@
       </table>
     </div>
     <% } %>
+    </form>
   </div>
 </main>
+<script>
+  const selectAll = document.getElementById('selectAllKeys');
+  if(selectAll) {
+    selectAll.addEventListener('change', (e) => {
+      document.querySelectorAll('.key-cb').forEach(cb => cb.checked = e.target.checked);
+    });
+  }
+</script>
 
 <%- include('../partials/footer') %>
