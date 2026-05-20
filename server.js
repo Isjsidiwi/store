@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const path = require('path');
 const { initDB } = require('./db');
 
@@ -13,10 +14,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
+  store: new FileStore({
+    path: './sessions',
+    retries: 0
+  }),
   secret: process.env.SESSION_SECRET || 'supersecretkey',
-  resave: false,
+  resave: true,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 jam
+  cookie: { 
+    maxAge: 1000 * 60 * 60 * 24, // 24 jam
+    secure: false 
+  }
 }));
 
 // Inject store info ke semua views
