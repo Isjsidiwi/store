@@ -159,6 +159,21 @@ router.post('/products/:id/variants/:vid/delete', requireAdmin, async (req, res)
   }
 });
 
+// ── Update Variant
+router.post('/products/:id/variants/:vid/edit', requireAdmin, async (req, res) => {
+  try {
+    const { name, price, original_price } = req.body;
+    await db.execute(
+      `UPDATE product_variants SET name = ?, price = ?, original_price = ? WHERE id = ?`,
+      [name, parseInt(price), original_price ? parseInt(original_price) : null, req.params.vid]
+    );
+    res.redirect(`/admin/products/${req.params.id}/edit?success=Varian+berhasil+diperbarui`);
+  } catch (err) {
+    console.error('Update variant error:', err.message);
+    res.redirect(`/admin/products/${req.params.id}/edit?error=Gagal+memperbarui+varian`);
+  }
+});
+
 // ── Keys Management
 router.get('/products/:id/keys', requireAdmin, async (req, res) => {
   try {

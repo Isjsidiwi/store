@@ -66,23 +66,27 @@
           <% } else { %>
             <% variants.forEach(v => { %>
               <tr style="border-bottom:1px solid var(--border)">
-                <td class="py-4 px-2 font-bold"><%= v.name %></td>
-                <td class="py-4 px-2 mono text-white">Rp <%= Number(v.price).toLocaleString('id-ID') %></td>
-                <td class="py-4 px-2 mono">
-                  <% if (v.original_price) { %>
-                    <span class="text-zinc-500 line-through">Rp <%= Number(v.original_price).toLocaleString('id-ID') %></span>
-                  <% } else { %>
-                    <span class="text-zinc-600">—</span>
-                  <% } %>
+                <form method="POST" action="/admin/products/<%= product.id %>/variants/<%= v.id %>/edit">
+                <td class="py-3 px-2">
+                  <input type="text" name="name" value="<%= v.name %>" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs w-full focus:border-blue-500 outline-none" required>
                 </td>
-                <td class="py-4 px-2">
-                  <span class="badge <%= v.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= v.stock %> stok</span>
+                <td class="py-3 px-2">
+                  <input type="number" name="price" value="<%= v.price %>" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs w-24 focus:border-blue-500 outline-none" required>
                 </td>
-                <td class="py-4 px-2 text-right">
-                  <form method="POST" action="/admin/products/<%= product.id %>/variants/<%= v.id %>/delete" onsubmit="return confirm('Hapus varian ini?')">
-                    <button type="submit" class="btn text-xs py-1 px-3" style="background:#ff444415;color:#ff8888;border:1px solid #ff444433">Hapus</button>
-                  </form>
+                <td class="py-3 px-2">
+                  <input type="number" name="original_price" value="<%= v.original_price || '' %>" placeholder="Coret" class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-xs w-24 focus:border-blue-500 outline-none">
                 </td>
+                <td class="py-3 px-2">
+                  <span class="badge <%= v.stock > 0 ? 'badge-green' : 'badge-red' %> text-[10px]"><%= v.stock %> stok</span>
+                </td>
+                <td class="py-3 px-2 text-right">
+                  <div class="flex gap-1 justify-end">
+                    <button type="submit" class="btn text-[10px] py-1 px-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20">Simpan</button>
+                    <button type="submit" form="delete-v-<%= v.id %>" class="btn text-[10px] py-1 px-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20">Hapus</button>
+                  </div>
+                </td>
+                </form>
+                <form id="delete-v-<%= v.id %>" method="POST" action="/admin/products/<%= product.id %>/variants/<%= v.id %>/delete" onsubmit="return confirm('Hapus varian ini?')"></form>
               </tr>
             <% }) %>
           <% } %>
