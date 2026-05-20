@@ -7,16 +7,16 @@
     Kembali ke Katalog
   </a>
 
-  <div class="card p-8 md:p-10 border-zinc-800">
-    <div class="flex items-start gap-6 mb-8">
+  <div class="card p-6 sm:p-8 md:p-10 border-zinc-800">
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 text-center sm:text-left">
       <% if (product.logo_url) { %>
-        <img src="<%= product.logo_url %>" alt="<%= product.name %>" class="w-24 h-24 rounded-2xl object-cover border border-zinc-700/50 shadow-lg">
+        <img src="<%= product.logo_url %>" alt="<%= product.name %>" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-zinc-700/50 shadow-lg">
       <% } else { %>
-        <div class="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl border border-zinc-700/50 bg-zinc-800/50 shadow-lg">📦</div>
+        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center text-4xl border border-zinc-700/50 bg-zinc-800/50 shadow-lg">📦</div>
       <% } %>
       <div class="flex-1 pt-1">
         <div class="text-[11px] font-bold uppercase tracking-widest text-blue-400 mb-2"><%= product.category %></div>
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white"><%= product.name %></h1>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white"><%= product.name %></h1>
         <span class="badge <%= product.stock > 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20' %>">
           <%= product.stock > 0 ? 'Tersedia ' + product.stock + ' Stok' : 'Stok Habis' %>
         </span>
@@ -24,30 +24,30 @@
     </div>
 
     <% if (product.description) { %>
-    <div class="mb-10 p-5 rounded-2xl text-sm leading-relaxed text-zinc-300 bg-zinc-800/30 border border-zinc-700/30">
+    <div class="mb-10 p-4 sm:p-5 rounded-2xl text-sm leading-relaxed text-zinc-300 bg-zinc-800/30 border border-zinc-700/30 text-center sm:text-left">
       <%= product.description %>
     </div>
     <% } %>
 
     <div class="mb-10">
-      <h3 class="text-xs font-bold uppercase tracking-wider mb-4 text-zinc-500">Pilih Jenis Produk:</h3>
+      <h3 class="text-xs font-bold uppercase tracking-wider mb-4 text-zinc-500 text-center sm:text-left">Pilih Jenis Produk:</h3>
       <div class="flex flex-col gap-3">
         <% variants.forEach(v => { %>
-          <div class="variant-item group relative p-5 rounded-2xl flex items-center justify-between border border-zinc-800 bg-zinc-900/50 hover:border-blue-500/50 transition-all cursor-pointer <%= v.stock > 0 ? '' : 'opacity-50 grayscale cursor-not-allowed' %>" 
+          <div class="variant-item group relative p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-0 border border-zinc-800 bg-zinc-900/50 hover:border-blue-500/50 transition-all cursor-pointer <%= v.stock > 0 ? '' : 'opacity-50 grayscale cursor-not-allowed' %>" 
                onclick="<%= v.stock > 0 ? `selectVariant(${v.id}, '${product.slug}')` : '' %>"
                id="variant-<%= v.id %>">
-            <div>
-              <div class="font-bold text-lg text-zinc-100 group-hover:text-blue-400 transition-colors"><%= v.name %></div>
+            <div class="w-full sm:w-auto text-center sm:text-left">
+              <div class="font-bold text-base sm:text-lg text-zinc-100 group-hover:text-blue-400 transition-colors"><%= v.name %></div>
               <div class="mt-1 text-xs font-medium <%= v.stock > 0 ? 'text-green-400' : 'text-red-400' %>">
                 <%= v.stock > 0 ? 'Stok: ' + v.stock : 'Stok habis' %>
               </div>
             </div>
-            <div class="text-right">
-              <div class="font-bold text-xl text-white">
+            <div class="w-full sm:w-auto text-center sm:text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start">
+              <div class="font-bold text-lg sm:text-xl text-white order-2 sm:order-1">
                 Rp <%= Number(v.price).toLocaleString('id-ID') %>
               </div>
               <% if (v.original_price) { %>
-                <div class="text-xs text-zinc-500 line-through mt-0.5">
+                <div class="text-xs text-zinc-500 line-through mt-0 sm:mt-0.5 order-1 sm:order-2">
                   Rp <%= Number(v.original_price).toLocaleString('id-ID') %>
                 </div>
               <% } %>
