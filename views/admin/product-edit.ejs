@@ -55,18 +55,26 @@
           <tr style="border-bottom:1px solid var(--border)">
             <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">NAMA JENIS</th>
             <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">HARGA</th>
+            <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">DISKON</th>
             <th class="text-left py-3 px-2 mono text-xs" style="color:var(--muted)">STOK READY</th>
             <th class="py-3 px-2"></th>
           </tr>
         </thead>
         <tbody>
           <% if (variants.length === 0) { %>
-            <tr><td colspan="4" class="py-8 text-center text-sm" style="color:var(--muted)">Belum ada varian. Tambahkan di bawah.</td></tr>
+            <tr><td colspan="5" class="py-8 text-center text-sm" style="color:var(--muted)">Belum ada varian. Tambahkan di bawah.</td></tr>
           <% } else { %>
             <% variants.forEach(v => { %>
               <tr style="border-bottom:1px solid var(--border)">
                 <td class="py-4 px-2 font-bold"><%= v.name %></td>
-                <td class="py-4 px-2 mono">Rp <%= Number(v.price).toLocaleString('id-ID') %></td>
+                <td class="py-4 px-2 mono text-white">Rp <%= Number(v.price).toLocaleString('id-ID') %></td>
+                <td class="py-4 px-2 mono">
+                  <% if (v.original_price) { %>
+                    <span class="text-zinc-500 line-through">Rp <%= Number(v.original_price).toLocaleString('id-ID') %></span>
+                  <% } else { %>
+                    <span class="text-zinc-600">—</span>
+                  <% } %>
+                </td>
                 <td class="py-4 px-2">
                   <span class="badge <%= v.stock > 0 ? 'badge-green' : 'badge-red' %>"><%= v.stock %> stok</span>
                 </td>
@@ -90,9 +98,13 @@
           <label class="block text-xs font-bold mb-1 ml-1" style="color:var(--muted)">Nama Jenis (misal: 1 Hari / 5 Hari)</label>
           <input type="text" name="name" class="field text-sm" placeholder="Contoh: 1 Hari" required>
         </div>
-        <div class="w-40">
+        <div class="w-32">
           <label class="block text-xs font-bold mb-1 ml-1" style="color:var(--muted)">Harga (Rp)</label>
           <input type="number" name="price" class="field text-sm" placeholder="5000" required>
+        </div>
+        <div class="w-32">
+          <label class="block text-xs font-bold mb-1 ml-1" style="color:var(--muted)">Harga Coret (Opsional)</label>
+          <input type="number" name="original_price" class="field text-sm" placeholder="10000">
         </div>
         <div class="flex items-end">
           <button type="submit" class="btn btn-primary px-6 h-[42px]">+ Simpan</button>

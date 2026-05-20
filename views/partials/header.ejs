@@ -44,13 +44,38 @@
     .wrap { position: relative; z-index: 1; }
     
     nav { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(9, 9, 11, 0.8) !important; border-bottom: 1px solid var(--border); }
-  </style>
-  <%- typeof extraHead !== 'undefined' ? extraHead : '' %>
-</head>
-<body>
-<div class="mesh"></div>
-<div class="wrap">
-<nav class="sticky top-0 z-50 px-6 py-4">
+
+    /* Loading Animation */
+    #loader { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
+    .loader-ring { width: 40px; height: 40px; border: 3px solid rgba(59, 130, 246, 0.1); border-radius: 50%; border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+    .loading-finished { opacity: 0; visibility: hidden; }
+
+    /* Floating CS Button */
+    .cs-float { position: fixed; bottom: 24px; right: 24px; z-index: 100; transform: translateY(0); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .cs-float:hover { transform: translateY(-5px); }
+    </style>
+    <%- typeof extraHead !== 'undefined' ? extraHead : '' %>
+    </head>
+    <body>
+    <div id="loader"><div class="loader-ring"></div></div>
+
+    <!-- Floating Telegram CS -->
+    <a href="https://t.me/rajasukii" target="_blank" class="cs-float group">
+    <div class="flex items-center gap-3 bg-[#24A1DE] text-white px-4 py-3 rounded-2xl shadow-2xl shadow-[#24A1DE]/20 hover:bg-[#2293cd]">
+    <div class="flex flex-col items-end">
+      <span class="text-[10px] font-bold uppercase tracking-widest opacity-80 leading-none mb-1">Customer Service</span>
+      <span class="text-xs font-bold leading-none">Hubungi Kami</span>
+    </div>
+    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+    </div>
+    </div>
+    </a>
+
+    <div class="mesh"></div>
+    <div class="wrap">
+    <nav class="sticky top-0 z-50 px-6 py-4">
+
   <div class="max-w-6xl mx-auto flex items-center justify-between">
     <a href="/" class="text-2xl font-extrabold tracking-tight flex items-center gap-2">
       <span class="w-8 h-8 rounded-lg bg-white text-black flex items-center justify-center text-sm">✦</span>

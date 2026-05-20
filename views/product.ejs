@@ -42,8 +42,15 @@
                 <%= v.stock > 0 ? 'Stok: ' + v.stock : 'Stok habis' %>
               </div>
             </div>
-            <div class="font-bold text-xl text-white">
-              Rp <%= Number(v.price).toLocaleString('id-ID') %>
+            <div class="text-right">
+              <div class="font-bold text-xl text-white">
+                Rp <%= Number(v.price).toLocaleString('id-ID') %>
+              </div>
+              <% if (v.original_price) { %>
+                <div class="text-xs text-zinc-500 line-through mt-0.5">
+                  Rp <%= Number(v.original_price).toLocaleString('id-ID') %>
+                </div>
+              <% } %>
             </div>
           </div>
         <% }) %>

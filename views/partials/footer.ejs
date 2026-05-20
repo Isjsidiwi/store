@@ -2,5 +2,14 @@
   <p class="mono text-xs" style="color:var(--muted);opacity:.5">&copy; <%= new Date().getFullYear() %> <%= storeName %></p>
 </footer>
 </div><!-- wrap -->
+<script>
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    if (loader) {
+      loader.classList.add('loading-finished');
+      setTimeout(() => loader.remove(), 600);
+    }
+  });
+</script>
 </body>
 </html>

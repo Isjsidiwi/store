@@ -1,92 +1,149 @@
-<% pageTitle = 'Dashboard' %>
+<% pageTitle = 'Dashboard Admin' %>
 <%- include('../partials/header') %>
 
-<main class="max-w-6xl mx-auto px-6 py-10">
-  <div class="flex items-center justify-between mb-8">
+<main class="max-w-6xl mx-auto px-6 py-12">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
     <div>
-      <h1 class="text-3xl font-black">Dashboard</h1>
-      <p class="text-sm mt-1" style="color:var(--muted)">Selamat datang di panel admin</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Ringkasan Toko</h1>
+      <p class="text-zinc-400 mt-2">Selamat datang kembali, berikut adalah performa toko Anda.</p>
     </div>
     <div class="flex gap-3">
-      <a href="/admin/products" class="btn btn-outline text-sm py-2 px-4">Kelola Produk</a>
-      <a href="/admin/orders" class="btn btn-primary text-sm py-2 px-4">Lihat Pesanan</a>
+      <a href="/admin/products" class="btn btn-outline text-sm py-2.5 px-5 rounded-xl border-zinc-800 hover:bg-zinc-900 transition-all flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        Kelola Produk
+      </a>
+      <a href="/admin/orders" class="btn bg-white text-black hover:bg-zinc-200 text-sm py-2.5 px-6 rounded-xl font-bold transition-all shadow-xl shadow-white/5 flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Lihat Pesanan
+      </a>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-    <div class="card p-5">
-      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Produk Aktif</div>
-      <div class="text-4xl font-black" style="color:var(--accent)"><%= stats.total_products %></div>
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <!-- Produk Aktif -->
+    <div class="card p-6 border-zinc-800 bg-zinc-900/40 relative overflow-hidden group">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-white group-hover:scale-110 transition-transform">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+      </div>
+      <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2">Produk Aktif</div>
+      <div class="text-4xl font-extrabold text-white tracking-tight"><%= stats.total_products %></div>
+      <div class="mt-4 text-xs font-medium text-blue-400/80">Katalog tersedia</div>
     </div>
-    <div class="card p-5">
-      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Total Stok</div>
-      <div class="text-4xl font-black" style="color:#00ff88"><%= stats.total_stock %></div>
+    
+    <!-- Total Stok -->
+    <div class="card p-6 border-zinc-800 bg-zinc-900/40 relative overflow-hidden group">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-white group-hover:scale-110 transition-transform">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+      </div>
+      <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2">Total Stok Key</div>
+      <div class="text-4xl font-extrabold text-green-400 tracking-tight"><%= stats.total_stock %></div>
+      <div class="mt-4 text-xs font-medium text-green-400/60">Ready di database</div>
     </div>
-    <div class="card p-5">
-      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Terbayar</div>
-      <div class="text-4xl font-black" style="color:#00ff88"><%= stats.total_paid %></div>
+    
+    <!-- Terbayar -->
+    <div class="card p-6 border-zinc-800 bg-zinc-900/40 relative overflow-hidden group border-b-2 border-b-green-500/20">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-white group-hover:scale-110 transition-transform">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 12h20"/><path d="m5 7 3 5-3 5"/><path d="m19 7-3 5 3 5"/></svg>
+      </div>
+      <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2">Pesanan Lunas</div>
+      <div class="text-4xl font-extrabold text-white tracking-tight"><%= stats.total_paid %></div>
+      <div class="mt-4 text-xs font-medium text-green-400">Transaksi sukses</div>
     </div>
-    <div class="card p-5">
-      <div class="mono text-xs mb-2 uppercase tracking-widest" style="color:var(--muted)">Pending</div>
-      <div class="text-4xl font-black" style="color:#ffcc44"><%= stats.total_pending %></div>
+    
+    <!-- Pending -->
+    <div class="card p-6 border-zinc-800 bg-zinc-900/40 relative overflow-hidden group border-b-2 border-b-yellow-500/20">
+      <div class="absolute -right-2 -bottom-2 opacity-5 text-white group-hover:scale-110 transition-transform">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2">Menunggu</div>
+      <div class="text-4xl font-extrabold text-yellow-500 tracking-tight"><%= stats.total_pending %></div>
+      <div class="mt-4 text-xs font-medium text-yellow-500/60">Belum dibayar</div>
     </div>
   </div>
 
-  <!-- Game Endpoint -->
-  <div class="mb-10">
-    <div class="card p-6 mb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)">Game Endpoints</div>
-          <h2 class="text-2xl font-bold mt-2">8BallPol</h2>
-          <p class="text-sm" style="color:var(--muted)">Kirim request `POST /api/8bp` tanpa harus keluar dari panel admin.</p>
+  <!-- Game Endpoint Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <div class="lg:col-span-1">
+      <div class="card p-8 border-blue-500/20 bg-blue-500/5 h-full">
+        <div class="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-6">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         </div>
-        <button id="admin8bpBtn" class="btn btn-primary text-sm py-2 px-4" onclick="send8bp()">Kirim Endpoint</button>
+        <h2 class="text-2xl font-bold text-white mb-2">8BallPool</h2>
+        <p class="text-sm text-zinc-400 mb-8 leading-relaxed">Kelola dan eksekusi request endpoint game langsung dari sini dengan aman.</p>
+        <button id="admin8bpBtn" class="btn w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition-all" onclick="send8bp()">
+          Jalankan Endpoint
+        </button>
       </div>
-      <div class="mt-5 bg-[var(--surface2)] p-4 rounded-2xl">
-        <div class="mono text-xs uppercase tracking-widest" style="color:var(--muted)">Response</div>
-        <pre id="admin8bpResult" class="mt-3 text-sm" style="white-space:pre-wrap;color:var(--text);min-height:180px;">Tekan tombol untuk melihat response.</pre>
+    </div>
+    
+    <div class="lg:col-span-2">
+      <div class="card bg-black/40 border-zinc-800 p-1 h-full overflow-hidden">
+        <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">API Console Response</span>
+          <div class="flex gap-1.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+          </div>
+        </div>
+        <div class="p-6">
+          <pre id="admin8bpResult" class="mono text-xs text-blue-300 leading-relaxed overflow-auto max-h-[200px]" style="white-space:pre-wrap;">Ready to capture response...</pre>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Recent Orders -->
-  <div>
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-bold">Pesanan Terbaru</h2>
-      <a href="/admin/orders" class="mono text-xs" style="color:var(--accent)">Lihat semua →</a>
+  <!-- Recent Orders Table -->
+  <div class="mb-12">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-white flex items-center gap-3">
+        Pesanan Terbaru
+        <span class="badge bg-zinc-800 text-zinc-400 font-normal">Last 10</span>
+      </h2>
+      <a href="/admin/orders" class="text-xs font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest">Lihat Semua Riwayat →</a>
     </div>
-    <div class="card overflow-hidden">
+    
+    <div class="card overflow-hidden border-zinc-800 bg-zinc-900/20">
       <% if (recentOrders.length === 0) { %>
-      <div class="p-8 text-center" style="color:var(--muted)">Belum ada pesanan</div>
+      <div class="p-16 text-center text-zinc-500">
+        <p class="text-lg font-medium">Belum ada aktivitas pesanan</p>
+      </div>
       <% } else { %>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead>
-            <tr style="border-bottom:1px solid var(--border)">
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Order ID</th>
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Produk</th>
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Pembeli</th>
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Nominal</th>
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Status</th>
-              <th class="text-left p-4 mono text-xs uppercase tracking-wider" style="color:var(--muted)">Waktu</th>
+            <tr class="bg-zinc-900/50 border-b border-zinc-800">
+              <th class="text-left p-4 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Produk</th>
+              <th class="text-left p-4 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Pembeli</th>
+              <th class="text-left p-4 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Nominal</th>
+              <th class="text-left p-4 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Status</th>
+              <th class="text-right p-4 text-[10px] font-bold uppercase tracking-wider text-zinc-500">Waktu</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-zinc-800/50">
             <% recentOrders.forEach(o => { %>
-            <tr style="border-bottom:1px solid var(--border)" class="hover:bg-[var(--surface2)] transition-colors">
-              <td class="p-4 mono text-xs" style="color:var(--muted)">#<%= o.id.substring(0,8).toUpperCase() %></td>
-              <td class="p-4 font-semibold"><%= o.product_name %></td>
-              <td class="p-4" style="color:var(--muted)"><%= o.customer_name %></td>
-              <td class="p-4 mono" style="color:var(--accent)">Rp <%= Number(o.unique_amount).toLocaleString('id-ID') %></td>
+            <tr class="hover:bg-white/[0.02] transition-colors group">
+              <td class="p-4">
+                <div class="font-bold text-zinc-200 group-hover:text-blue-400 transition-colors"><%= o.product_name %></div>
+                <div class="mono text-[10px] text-zinc-500 mt-1">#<%= o.id.substring(0,8).toUpperCase() %></div>
+              </td>
+              <td class="p-4">
+                <div class="text-zinc-300 font-medium"><%= o.customer_name %></div>
+              </td>
+              <td class="p-4 mono font-bold text-white">
+                Rp <%= Number(o.unique_amount).toLocaleString('id-ID') %>
+              </td>
               <td class="p-4">
                 <span class="badge <%=
                   o.status === 'paid' ? 'badge-green' :
                   o.status === 'pending' ? 'badge-yellow' : 'badge-gray'
-                %>"><%= o.status.toUpperCase() %></span>
+                %> text-[10px]"><%= o.status.toUpperCase() %></span>
               </td>
-              <td class="p-4 mono text-xs" style="color:var(--muted)"><%= o.created_at %></td>
+              <td class="p-4 text-right mono text-[11px] text-zinc-500">
+                <%= o.created_at.split(' ')[0] %><br>
+                <span class="opacity-50"><%= o.created_at.split(' ')[1] %></span>
+              </td>
             </tr>
             <% }) %>
           </tbody>
@@ -102,8 +159,9 @@
     const button = document.getElementById('admin8bpBtn');
     const output = document.getElementById('admin8bpResult');
     button.disabled = true;
-    button.textContent = 'Mengirim...';
-    output.textContent = 'Sedang menghubungi /api/8bp...';
+    button.classList.add('opacity-50', 'cursor-not-allowed');
+    button.textContent = 'Mengeksekusi...';
+    output.textContent = '[SYSTEM] Menghubungi /api/8bp...\n[SYSTEM] Menunggu response server...';
 
     try {
       const response = await fetch('/api/8bp', {
@@ -112,14 +170,15 @@
         body: JSON.stringify({})
       });
       const data = await response.json();
-      output.textContent = JSON.stringify(data, null, 2);
+      output.textContent = '[SUCCESS] Response received:\n\n' + JSON.stringify(data, null, 2);
     } catch (err) {
-      output.textContent = 'Request gagal: ' + err.message;
+      output.textContent = '[ERROR] Request failed:\n' + err.message;
     } finally {
       button.disabled = false;
-      button.textContent = 'Kirim Endpoint';
+      button.classList.remove('opacity-50', 'cursor-not-allowed');
+      button.textContent = 'Jalankan Endpoint';
     }
   }
 </script>
 
-<%- include('../partials/footer') %>
+<%- include('../partials/header') %>

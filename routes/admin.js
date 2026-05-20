@@ -97,10 +97,10 @@ router.post('/products/:id/delete', requireAdmin, async (req, res) => {
 
 // ── Variants Management
 router.post('/products/:id/variants/add', requireAdmin, async (req, res) => {
-  const { name, price } = req.body;
+  const { name, price, original_price } = req.body;
   await db.execute(
-    `INSERT INTO product_variants (product_id, name, price) VALUES (?, ?, ?)`,
-    [req.params.id, name, parseInt(price)]
+    `INSERT INTO product_variants (product_id, name, price, original_price) VALUES (?, ?, ?, ?)`,
+    [req.params.id, name, parseInt(price), original_price ? parseInt(original_price) : null]
   );
   res.redirect(`/admin/products/${req.params.id}/edit?success=Varian+ditambahkan`);
 });
