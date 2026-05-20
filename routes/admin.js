@@ -46,22 +46,27 @@ router.get('/', requireAdmin, async (req, res) => {
 
 // ── Products List
 router.get('/products', requireAdmin, async (req, res) => {
-  const { rows: products } = await db.execute(`
-    SELECT p.*, (SELECT COUNT(*) FROM keys k WHERE k.product_id = p.id AND k.is_used = 0) as stock
-    FROM products p ORDER BY p.created_at DESC
-  `);
-  res.render('admin/products', { products, success: req.query.success, error: null });
+  try {
+    const { rows: products } = await db.execute(`
+      SELECT p.*, (SELECT COUNT(*) FROM keys k WHERE k.product_id = p.id AND k.is_used = 0) as stock
+      FROM products p WHERE p.is_active = 1 ORDER BY p.created_at DESC
+    `);
+    res.render('admin/products', { products, success: req.query.success, error: req.query.error });
+  } catch (err) {
+    console.error('Get products error:', err.message);
+    res.render('admin/products', { products: [], success: null, error: 'Gagal mengambil data produk' });
+  }
 });
 
 // ── Add Product
 router.post('/products/add', requireAdmin, async (req, res) => {
   try {
     const { name, logo_url, description, price, category } = req.body;
-    if (!name || !price) return res.redirect('/admin/products?error=1');
+    if (!name) return res.redirect('/admin/products?error=Nama+produk+wajib+diisi');
     const slug = slugify(name) + '-' + Date.now().toString().slice(-4);
     await db.execute(
-      `INSERT INTO products (name, slug, logo_url, description, price, category) VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, slug, logo_url || null, description || '', parseInt(price), category || 'umum']
+      `INSERT INTO products (name, slug, logo_url, description, price, category, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)`,
+      [name, slug, logo_url || null, description || '', 0, category || 'umum']
     );
     res.redirect('/admin/products?success=Produk+berhasil+ditambahkan');
   } catch (err) {
@@ -73,7 +78,7 @@ router.post('/products/add', requireAdmin, async (req, res) => {
 // ── Edit Product Form
 router.get('/products/:id/edit', requireAdmin, async (req, res) => {
   try {
-    const { rows } = await db.execute(`SELECT * FROM products WHERE id = ?`, [req.params.id]);
+    const { rows } = await db.execute(`SELECT * FROM products WHERE id = ? AND is_active = 1`, [req.params.id]);
     if (!rows.length) return res.redirect('/admin/products');
     
     const { rows: variants } = await db.execute(
@@ -92,10 +97,10 @@ router.get('/products/:id/edit', requireAdmin, async (req, res) => {
 // ── Update Product
 router.post('/products/:id/edit', requireAdmin, async (req, res) => {
   try {
-    const { name, logo_url, description, price, category, is_active } = req.body;
+    const { name, logo_url, description, category, is_active } = req.body;
     await db.execute(
-      `UPDATE products SET name=?, logo_url=?, description=?, price=?, category=?, is_active=? WHERE id=?`,
-      [name, logo_url || null, description || '', parseInt(price), category || 'umum', is_active ? 1 : 0, req.params.id]
+      `UPDATE products SET name=?, logo_url=?, description=?, category=?, is_active=? WHERE id=?`,
+      [name, logo_url || null, description || '', category || 'umum', is_active ? 1 : 0, req.params.id]
     );
     res.redirect(`/admin/products/${req.params.id}/edit?success=Produk+berhasil+diperbarui!`);
   } catch (err) {
@@ -108,10 +113,10 @@ router.post('/products/:id/edit', requireAdmin, async (req, res) => {
 router.post('/products/:id/delete', requireAdmin, async (req, res) => {
   try {
     await db.execute(`UPDATE products SET is_active = 0 WHERE id = ?`, [req.params.id]);
-    res.redirect('/admin/products?success=Produk+dinonaktifkan');
+    res.redirect('/admin/products?success=Produk+berhasil+dihapus');
   } catch (err) {
     console.error('Delete product error:', err.message);
-    res.redirect('/admin/products');
+    res.redirect('/admin/products?error=Gagal+menghapus+produk');
   }
 });
 
