@@ -137,9 +137,22 @@ router.post('/products/:id/variants/add', requireAdmin, async (req, res) => {
 
 router.post('/products/:id/variants/:vid/delete', requireAdmin, async (req, res) => {
   try {
-    // Hanya hapus jika tidak ada key yang terikat atau order
-    await db.execute(`DELETE FROM product_variants WHERE id = ?`, [req.params.vid]);
-    res.redirect(`/admin/products/${req.params.id}/edit?success=Varian+dihapus`);
+    const variantId = req.params.vid;
+    const productId = req.params.id;
+
+    // 1. Putuskan hubungan di tabel orders agar tidak error
+    await db.execute(`UPDATE orders SET variant_id = NULL WHERE variant_id = ?`, [variantId]);
+    
+    // 2. Cari key yang terikat dengan varian ini dan putuskan hubungannya di orders
+    await db.execute(`UPDATE orders SET key_id = NULL WHERE key_id IN (SELECT id FROM keys WHERE variant_id = ?)`, [variantId]);
+    
+    // 3. Hapus semua key yang terkait dengan varian ini
+    await db.execute(`DELETE FROM keys WHERE variant_id = ?`, [variantId]);
+    
+    // 4. Hapus varian
+    await db.execute(`DELETE FROM product_variants WHERE id = ?`, [variantId]);
+    
+    res.redirect(`/admin/products/${productId}/edit?success=Varian+berhasil+dihapus`);
   } catch (err) {
     console.error('Delete variant error:', err.message);
     res.redirect(`/admin/products/${req.params.id}/edit?error=Gagal+menghapus+varian`);
