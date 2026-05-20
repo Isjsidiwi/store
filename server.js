@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
+const session = require('cookie-session');
 const path = require('path');
 const { initDB } = require('./db');
 
@@ -13,13 +13,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'supersecretkey',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    maxAge: 1000 * 60 * 60 * 24, // 24 jam
-    secure: false 
-  }
+  name: 'suki_session',
+  keys: [process.env.SESSION_SECRET || 'rajasuki-secret-key-123'],
+  maxAge: 24 * 60 * 60 * 1000 // 24 jam
 }));
 
 // Inject store info ke semua views
